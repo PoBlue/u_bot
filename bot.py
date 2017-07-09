@@ -1,6 +1,7 @@
 from wxpy import *
 import json
 from qqmail import get_qqmail_pop
+from email_paser import get_robot_reply
 
 JSON_FILE = 'config.json'
 with open(JSON_FILE) as data_file:    
@@ -23,10 +24,18 @@ def auto_reply(msg):
         # 回复消息内容和类型
         tuling.do_reply(msg)
 
-user_gmail = data['gmail_account']
-pwd_gmail = data['password']
+def auto_send_msg():
+    user_gmail = data['gmail_account']
+    pwd_gmail = data['password']
 
-get_qqmail_pop(user_gmail, pwd_gmail)
+    emails = get_qqmail_pop(user_gmail, pwd_gmail)
+    send_msg = get_robot_reply(emails, data)
 
+    for item in send_msg:
+        for name in item['group_name']:
+            my_group = bot.groups().search(name)[0]
+            group.send(item['send_msg'])
+
+auto_send_msg()
 # 进入 Python 命令行、让程序保持运行
 embed()

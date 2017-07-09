@@ -22,22 +22,41 @@ def is_udacity_forum(subject):
         return True
     return False
 
+def get_robot_reply(email_results, data):
+    reply_msg = [] 
 
-# get data for test 
-JSON_FILE = 'config.json'
-with open(JSON_FILE) as data_file:    
-    data = json.load(data_file)
+    for email_result in email_results:
+        headers = email_result['header']
+        content_html = email_result['content'][-1]
+
+        if is_udacity_forum(headers['Subject']) is True:
+            msg = forum_send(headers, content_html, data)
+            reply_msg += msg
     
+    return reply_msg
 
-user_gmail = data['gmail_account']
-pwd_gmail = data['password']
+def forum_send(headers, content_html, data):
+    subject = headers['Subject']
+    topic = get_email_topic(subject)
+    link = get_email_link(content_html)
 
-email_results = get_qqmail_pop(user_gmail, pwd_gmail)
-for email_result in email_results:
-    content_html = email_result['content'][-1]
-    headers = email_result['header']
+    reply_msg = []
+    for item in data['forum_group']:
+        if match_subject(subject, item['match_subject']) is False:
+            continue
 
-    if is_udacity_forum(headers['Subject']) == True:
-        topic = get_email_topic(headers['Subject'])
-        link = get_email_link(content_html)
-        
+        forum_template = "问题: {0} \n\n链接: {1}"
+        message = forum_template.format(topic, link)
+        msg = {}
+        msg['group_name'] = item['group_name']
+        msg['send_msg'] = message
+        reply_msg.append(msg)
+
+    return reply_msg 
+
+def match_subject(subject, strings):
+    for s in strings:
+        if subject.find(s) != -1:
+            return True
+    return False
+
