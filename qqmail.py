@@ -14,25 +14,26 @@ SERVER = "pop.qq.com"
 
 def get_qqmail_pop(user, pwd):
     server = poplib.POP3_SSL(SERVER)
-
     server.user(user)
     server.pass_(pwd)
 
+    emails = []
     resp, mails, octets = server.list()
     index = len(mails)
-    print(server.stat())
-    print(server.list())
-    resp, lines, octets = server.retr(index)
-    msg_content = b'\r\n'.join(lines)
-    # 稍后解析出邮件:
-    msg_content = msg_content.decode()
-    msg = Parser().parsestr(msg_content)
-    
-    email_data = {}
-    email_data['header'] = get_email_header(msg)
-    email_data['content'] = get_email_content(msg)
+    for i in range(len(mails)):
+        resp, lines, octets = server.retr(i + 1)
+
+        msg_content = b'\r\n'.join(lines)
+        msg_content = msg_content.decode()
+        msg = Parser().parsestr(msg_content)
+
+        email_data = {}
+        email_data['header'] = get_email_header(msg)
+        email_data['content'] = get_email_content(msg)
+        emails.append(email_data)
+
     server.quit()
-    return email_data
+    return emails
 
 def get_email_header(msg, indent=0):
     results = {}
