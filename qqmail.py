@@ -1,6 +1,5 @@
 import poplib
 import email
-import json
 from email.parser import Parser
 from email.header import decode_header
 from email.utils import parseaddr
@@ -12,9 +11,6 @@ from email.utils import parseaddr
 
 SMTP_SERVER = "imap.gmail.com"
 SERVER = "pop.qq.com"
-JSON_FILE = 'config.json'
-with open(JSON_FILE) as data_file:    
-    data = json.load(data_file)
 
 def get_qqmail_pop(user, pwd):
     server = poplib.POP3_SSL(SERVER)
@@ -39,7 +35,7 @@ def get_qqmail_pop(user, pwd):
     return email_data
 
 def get_email_header(msg, indent=0):
-    results = []
+    results = {}
     if indent == 0:
         # 邮件的From, To, Subject存在于根对象上:
         for header in ['From', 'To', 'Subject']:
@@ -53,8 +49,7 @@ def get_email_header(msg, indent=0):
                     hdr, addr = parseaddr(value)
                     name = decode_str(hdr)
                     value = u'%s <%s>' % (name, addr)
-            result = '%s%s: %s' % ('  ' * indent, header, value)
-            results.append(result)
+            results[header] = value
         return results
 
 def get_email_content(msg, indent=0):
@@ -65,7 +60,6 @@ def get_email_content(msg, indent=0):
             # get_payload()返回list，包含所有的子对象:
             parts = msg.get_payload()
             for n, part in enumerate(parts):
-                print('%spart %s' % ('  ' * indent, n))
                 # 递归打印每一个子对象:
                 get_content(part, indent + 1)
         else:
@@ -102,8 +96,3 @@ def guess_charset(msg):
         if pos >= 0:
             charset = content_type[pos + 8:].strip()
     return charset
-
-user_gmail = data['gmail_account']
-pwd_gmail = data['password']
-
-print(get_qqmail_pop(user_gmail, pwd_gmail))
