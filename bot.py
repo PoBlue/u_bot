@@ -45,3 +45,5 @@ def main():
 # 进入 Python 命令行、让程序保持运行
 # embed()
 bot.join()
+
+main()
