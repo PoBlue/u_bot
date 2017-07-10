@@ -11,6 +11,14 @@ def get_forum_location(url):
         print(url)
     return r.history[0].headers['Location']
 
+def get_forum_preview(content):
+    length = 16
+    soup = BeautifulSoup(content, 'lxml') 
+    p_tag = soup.find('tbody').find('p')
+    if p_tag is not None:
+        return p_tag.text[:length] + '...'
+    return ""
+
 def get_email_link(content):
     soup = BeautifulSoup(content, 'lxml')
     meta_content_tag = soup.find('meta', attrs={'content': '阅读整个主题'})
@@ -61,6 +69,7 @@ def forum_send(headers, content_html, data):
     subject = headers['Subject']
     topic = get_email_topic(subject)
     question = get_email_question(subject)
+    preview_content = get_forum_preview(content_html)
     link = get_email_link(content_html)
     link = get_forum_location(link)
 
@@ -69,8 +78,8 @@ def forum_send(headers, content_html, data):
         if match_subject(subject, item['match_subject']) is False:
             continue
 
-        forum_template = "主题: 【{0}】\n\n问题❓: {1} \n\n链接: {2}"
-        message = forum_template.format(topic, question, link)
+        forum_template = "主题: 【{0}】\n\n问题❓: {1} \n预览: {2} \n\n链接: {3}"
+        message = forum_template.format(topic, question, preview_content, link)
         msg = {}
         msg['group_name'] = item['group_name']
         msg['send_msg'] = message
@@ -84,7 +93,7 @@ def match_subject(subject, strings):
             return True
     return False
 
-# TEST
+# # TEST
 # JSON_FILE = 'config.json'
 # with open(JSON_FILE) as data_file:    
 #     data = json.load(data_file)
