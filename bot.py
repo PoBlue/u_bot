@@ -12,7 +12,7 @@ tuling = Tuling(api_key=data['api_key'])
 groups = []
 
 for name in data['group_name']:
-    my_group = bot.groups().search(name)[0]
+    my_group = bot.groups().search(name)
     groups.append(my_group)
 
 @bot.register(groups, TEXT)
@@ -34,7 +34,7 @@ def auto_send_msg():
     for item in send_msg:
         for name in item['group_name']:
             my_group = bot.groups().search(name)[0]
-            group.send(item['send_msg'])
+            my_group.send(item['send_msg'])
 
 auto_send_msg()
 # 进入 Python 命令行、让程序保持运行
