@@ -85,14 +85,14 @@ def match_subject(subject, strings):
     return False
 
 # TEST
-JSON_FILE = 'config.json'
-with open(JSON_FILE) as data_file:    
-    data = json.load(data_file)
+# JSON_FILE = 'config.json'
+# with open(JSON_FILE) as data_file:    
+#     data = json.load(data_file)
 
-user_gmail = data['gmail_account']
-pwd_gmail = data['password']
+# user_gmail = data['gmail_account']
+# pwd_gmail = data['password']
 
-emails = get_qqmail_pop(user_gmail, pwd_gmail)
-send_msg = get_robot_reply(emails, data)
+# emails = get_qqmail_pop(user_gmail, pwd_gmail)
+# send_msg = get_robot_reply(emails, data)
 
-print(get_robot_reply(emails, data))
+# print(get_robot_reply(emails, data))

@@ -31,6 +31,7 @@ def get_qqmail_pop(user, pwd):
         email_data['header'] = get_email_header(msg)
         email_data['content'] = get_email_content(msg)
         emails.append(email_data)
+        server.dele(i) # delete email
 
     server.quit()
     return emails
