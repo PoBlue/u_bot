@@ -39,8 +39,9 @@ def auto_send_msg():
 
 def main():
     while True:
+        time = data['check_time'] * 60
         auto_send_msg()
-        sleep(60)
+        sleep(time)
 
 # 进入 Python 命令行、让程序保持运行
 # embed()
